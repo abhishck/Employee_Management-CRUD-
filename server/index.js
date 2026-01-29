@@ -1,0 +1,32 @@
+import express from "express"
+import dotenv from "dotenv"
+import dbConnection from "./config/dbConfig.js";
+
+import router from "./routes/empRoutes.js";
+import errorHandler from "./middlewares/errorHandler.js";
+
+dotenv.config();
+dbConnection();
+
+const app=express();
+
+console.log("PORT from env:", process.env.PORT);
+
+
+const Port= 3000;
+
+app.use(express.json())
+app.use("/api/employees",router)
+app.use(errorHandler)
+app.get("/", (req, res) => {
+  res.send("Server is alive");
+});
+
+
+
+app.listen(Port,()=>{
+    console.log(`Server is running on the port : ${Port}`)
+})
+
+
+
