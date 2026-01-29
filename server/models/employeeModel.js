@@ -10,7 +10,7 @@ const EmployeeSchema = new mongoose.Schema({
         required:[true,"Please enter a valid email"]
     },
     contact:{
-        type:Number,
+        type:String,
         required:[true,"Please enter a number"]
     },
     department:{

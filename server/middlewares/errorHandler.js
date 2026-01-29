@@ -14,6 +14,9 @@ const errorHandler=async(err,req,res,next)=>{
         case constant.UNAUTHORIZED :
             res.json({success:false,title:"Unauthorized access",err:err.message,stackTrace:err.stack})
             break;
+        case constant.INTERNAL_SERVER_ERROR :
+            res.json({success:false,title:"internal server error",err:err.message,stackTrace:err.stack})
+            break;
         default:
             console.log("All good no error!!")
             break;
