@@ -1,6 +1,7 @@
 import { constant } from "../constants.js";
-const errorHandler=async(err,req,res,next)=>{
+const errorHandler=(err,req,res,next)=>{
     const statusCode=res.statusCode ? res.statusCode : 500;
+    res.status(statusCode)
     switch(statusCode){
         case constant.BAD_REQUEST :
             res.json({success:false,title:"Bad Request",err:err.message,stackTrace:err.stack})
