@@ -4,6 +4,7 @@ import dbConnection from "./config/dbConfig.js";
 
 import router from "./routes/empRoutes.js";
 import errorHandler from "./middlewares/errorHandler.js";
+import authRouter from "./routes/authRoutes.js";
 
 dotenv.config();
 dbConnection();
@@ -17,6 +18,7 @@ const Port= 3000;
 
 app.use(express.json())
 app.use("/api/employees",router)
+app.use("/api/users",authRouter)
 app.use(errorHandler)
 app.get("/", (req, res) => {
   res.send("Server is alive");
