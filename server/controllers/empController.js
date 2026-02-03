@@ -1,6 +1,6 @@
 import empModel from "../models/employeeModel.js";
 
-export const addEmployee = async (req, res,next) => {
+export const addEmployee = async (req, res, next) => {
   try {
     let { name, email, contact, department } = req.body;
     if (!name || !email || !contact || !department) {
@@ -12,15 +12,15 @@ export const addEmployee = async (req, res,next) => {
     email = email.trim().toLowerCase();
     department = department.trim();
 
-    if(contact.length !== 10){
+    if (contact.length !== 10) {
       res.status(400);
-      throw new Error("contact must contain 10 numbers!!")
+      throw new Error("contact must contain 10 numbers!!");
     }
 
     const existingEmp = await empModel.findOne({ email });
     if (existingEmp) {
-      res.status(400)
-      throw new Error("Email already exists")
+      res.status(400);
+      throw new Error("Email already exists");
     }
 
     const emp = new empModel({
@@ -41,46 +41,78 @@ export const addEmployee = async (req, res,next) => {
   }
 };
 
-export const getEmployees = async (req, res,next) => {
+export const getEmployees = async (req, res, next) => {
   try {
-    const emps = await empModel.find();
-    return res.json({ success: true, employees: emps });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const search = req.query.search || "";
+    const department = req.query.department;
+
+    const skip = (page - 1) * limit;
+
+    let query = {};
+
+    query.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+    ];
+
+    if (department) {
+      query.department = department;
+    }
+
+    const totalEmployees = await empModel.countDocuments(query);
+
+    const employees = await empModel
+      .find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      page,
+      limit,
+      totalEmployees,
+      totalPages,
+      data: employees,
+    });
   } catch (err) {
     console.log("get employees error:", err);
     next(err);
   }
 };
 
-export const getEmployeeById = async (req, res,next) => {
+export const getEmployeeById = async (req, res, next) => {
   try {
     const id = req.params.id;
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        res.status(400);
-        throw new Error("invalid id!!")
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(400);
+      throw new Error("invalid id!!");
     }
     const emp = await empModel.findById(id);
     if (!emp) {
       res.status(404);
-      throw new Error("employee not found !!")
+      throw new Error("employee not found !!");
     }
     return res.json({ success: true, employee: emp });
   } catch (err) {
     console.log("get employee error:", err);
-   next(err);
+    next(err);
   }
 };
 
-export const updateEmployee = async (req, res,next) => {
+export const updateEmployee = async (req, res, next) => {
   try {
     const id = req.params.id;
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        res.status(400);
-        throw new Error("invalid id!!")
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(400);
+      throw new Error("invalid id!!");
     }
     const emp = await empModel.findById(id);
     if (!emp) {
-       res.status(404);
-      throw new Error("employee not found !!")
+      res.status(404);
+      throw new Error("employee not found !!");
     }
     const updatedEmployee = await empModel.findByIdAndUpdate(id, req.body, {
       new: true,
@@ -89,26 +121,26 @@ export const updateEmployee = async (req, res,next) => {
     return res.json({ success: true, employee: updatedEmployee });
   } catch (err) {
     console.log("update employee error:", err);
-   next(err);
+    next(err);
   }
 };
 
-export const deleteEmployee = async (req, res,next) => {
+export const deleteEmployee = async (req, res, next) => {
   try {
     const id = req.params.id;
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        res.status(400);
-        throw new Error("invalid id!!")
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(400);
+      throw new Error("invalid id!!");
     }
     const emp = await empModel.findById(id);
     if (!emp) {
       res.status(404);
-      throw new Error("employee not found !!")
+      throw new Error("employee not found !!");
     }
     const deleted = await empModel.findByIdAndDelete(id);
     return res.json({ success: true, employee: deleted });
   } catch (err) {
     console.log("delete employee error:", err);
-   next(err);
+    next(err);
   }
 };
