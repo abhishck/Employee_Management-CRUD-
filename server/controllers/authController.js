@@ -2,10 +2,10 @@ import userModel from "../models/userModel.js";
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
  
-export const register=async(req,res)=>{
+export const register=async(req,res,next)=>{
     try {
-        const {name,email,password,role}=req.body;
-        if(!name || !email || !password || !role){
+        const {username,email,password,role}=req.body;
+        if(!username || !email || !password || !role){
             res.status(400);
             throw new Error("All Fields Are Mandatory !!");
         }
@@ -18,7 +18,7 @@ export const register=async(req,res)=>{
         const hashedPassword=await bcrypt.hash(password,10);
 
         const user=new userModel({
-            name,
+            name:username,
             email,
             password:hashedPassword ,
             role
