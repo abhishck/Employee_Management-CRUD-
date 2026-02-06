@@ -89,3 +89,7 @@ export const currentUser = async (req, res) => {
   });
 };
 
+export const isAuthenticated=(req,res)=>{
+    return res.status(200).json({success:true ,user:req.user})
+}
+

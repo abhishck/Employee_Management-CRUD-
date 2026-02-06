@@ -2,10 +2,10 @@ import jwt from "jsonwebtoken"
 
 const validateToken=(req,res,next)=>{
     let token;
-    const authHeader=req.header.authorization || req.header.Authorization;
-    if(authHeader && authHeader.startsWith("Bearer")){
+    const authHeader=req.headers.authorization || req.headers.Authorization;
+    if(authHeader && authHeader.startsWith("Bearer ")){
         token=authHeader.split(" ")[1];
-        jwt.verify(token,process.env.JWT_SECRET_TOKEN,(err,decoded)=>{
+        jwt.verify(token,process.env.JWT_ACCESS_TOKEN,(err,decoded)=>{
            if (err) {
         res.status(401);
         throw new Error("User is not authorized");

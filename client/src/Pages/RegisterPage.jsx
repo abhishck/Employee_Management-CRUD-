@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import api from "../api/axios";
 
-function AuthComponent() {
+function RegisterPage() {
     const [username,setUserName]=useState("");
     const [email,setEmail]=useState("");
     const [password,setPassword]=useState("");
@@ -54,6 +54,8 @@ function AuthComponent() {
         api.post("/api/users/register",{username,email,password,role})
         .then((result)=>{console.log(result)
             alert(result.data.message)
+            localStorage.setItem("token",result.data.token);
+            navigate("/dashboard");
         })
         .catch((err)=>{console.log(err.response.data)
             alert(err.response.data.err)
@@ -148,4 +150,4 @@ function AuthComponent() {
   );
 }
 
-export default AuthComponent;
+export default RegisterPage;
